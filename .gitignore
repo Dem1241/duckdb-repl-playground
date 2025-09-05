@@ -1,5 +1,17 @@
-node_modules
-out/
-.DS_Store
+# Node
+node_modules/
 npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+# Output
+out/
+*.log
+
+# OS/editor
+.DS_Store
+*.swp
+*.swo
+
+# Env
 .env
