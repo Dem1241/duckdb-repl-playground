@@ -56,7 +56,7 @@ ORDER BY 2 DESC;
 > tip: you can mount more data anytime:
 > `.open ./data/*.parquet` or `.open ./data/other.csv AS other_view`
 
----
+
 
 ## commands (what `.help` shows)
 
@@ -83,7 +83,7 @@ ORDER BY 2 DESC;
 * `.chart <bar|line|scatter|auto> <xcol|auto> <ycol|auto> [out.html]`
   writes a self-contained Chart.js HTML file
 
----
+
 
 ## one-shot (optional)
 
@@ -103,5 +103,5 @@ node src/cli.mjs --open ./data/movies.csv \
   -c bar --x genre --y avg_rating --chart-out out/genre_avg.html
 ```
 
----
+
 
