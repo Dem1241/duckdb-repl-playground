@@ -1,6 +1,6 @@
 # duckDB playground (node + REPL + charts)
 
-query CSV/Parquet (and soon JSON) with DuckDB from Node.js — explore, export, and visualize without standing up a server.
+query CSV/Parquet (and soon JSON) with DuckDB from Node.js. explore, export, and visualize without standing up a server.
 
 ## features
 
