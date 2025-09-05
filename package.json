@@ -1,0 +1,15 @@
+{
+  "name": "duckdb-playground",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/cli.mjs",
+    "repl": "node src/cli.mjs --repl",
+    "check": "node src/check.mjs"
+  },
+  "dependencies": {
+    "duckdb": "^1.1.0",
+    "minimist": "^1.2.8"
+  }
+}
