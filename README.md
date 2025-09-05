@@ -10,7 +10,6 @@ query CSV/Parquet (and soon JSON) with DuckDB from Node.js
 - quick charts (bar/line/scatter) to HTML (`.chart bar genre avg_rating out/genre.html`)
 - one-shot mode if you need it (`-q` / `-f`) — optional
 
----
 
 ## quick start (REPL-first)
 
@@ -67,11 +66,11 @@ ORDER BY 2 DESC;
 
 **data**
 
-* `.tables` — list tables/views
-* `.schema <name>` — show columns for a table/view
-* `.open <fileOrGlob> [AS name]` — mount CSV/Parquet as a view
-* `.drop <view>` — drop a view
-* `.sample <view> [n]` — preview first *n* rows (default 5)
+* `.tables` -> list tables/views
+* `.schema <name>` -> show columns for a table/view
+* `.open <fileOrGlob> [AS name]` -> mount CSV/Parquet as a view
+* `.drop <view>` -> drop a view
+* `.sample <view> [n]` -> preview first *n* rows (default 5)
 
 **results**
 
