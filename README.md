@@ -1,18 +1,18 @@
 # duckDB playground (node + REPL + charts)
 
-query CSV/Parquet (and soon JSON) with DuckDB from Node.js. explore, export, and visualize without standing up a server.
+query CSV/Parquet (and soon JSON) with DuckDB from Node.js. explore, export, and visualize without a server.
 
 ## features
 
-* **REPL-first workflow**: type SQL, see results instantly
-* **discoverability**: `.help`, `.tables`, `.schema`, `.sample`
-* **mount files as views**: `--open data/*.csv` or `--open data/*.parquet`
-* **globs** supported (Parquet globs are scanned natively)
-* **exports**: CSV / JSON / Parquet (`.export out/file.ext` or `-o`)
-* **quick charts**: bar/line/scatter to standalone HTML via Chart.js
-* **one-shot mode**: `-q` or `-f queries/*.sql` (optionally export + chart)
-* **:memory: or file-backed DB**: `--db :memory:` (default) or `--db file.duckdb`
-* **robust charting**: case-insensitive columns, numeric coercion (incl. “8,35”), `--chart auto` / `.chart auto`
+* REPL-first workflow: type SQL, see results instantly
+* discoverability: `.help`, `.tables`, `.schema`, `.sample`
+* mount files as views: `--open data/*.csv` or `--open data/*.parquet`
+* globs supported (Parquet globs are scanned natively)
+* exports: CSV / JSON / Parquet (`.export out/file.ext` or `-o`)
+* quick charts: bar/line/scatter to standalone HTML via Chart.js
+* one-shot mode: `-q` or `-f queries/*.sql` (optionally export + chart)
+* :memory: or file-backed DB: `--db :memory:` (default) or `--db file.duckdb`
+* robust charting: case-insensitive columns, numeric coercion (incl. “8,35”), `--chart auto` / `.chart auto`
 
 
 ## quick start (REPL-first)
@@ -131,7 +131,7 @@ node src/cli.mjs --open ./data/movies.csv \
 -h,  --help                Help
 ```
 
-notes:
+**notes**
 
 * you can pass `--open` multiple times (globs OK).
 * when using a file-backed DB (`--db file.duckdb`), views and tables persist.
