@@ -22,9 +22,7 @@ export async function writeCSV(filePath, rows) {
   await fs.writeFile(filePath, lines.join("\n"));
 }
 
-// BigInt-safe JSON replacer:
-// - If a BigInt fits in Number safely, emit a Number.
-// - Otherwise emit a string to avoid precision loss.
+
 function jsonReplacer(_key, value) {
   if (typeof value === "bigint") {
     const n = Number(value);

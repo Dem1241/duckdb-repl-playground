@@ -4,7 +4,7 @@ import duckdb from "duckdb";
 const db = new duckdb.Database(":memory:");
 const conn = db.connect();
 
-// Promise helpers that *only* pass a params array when needed
+
 function run(sql, params) {
   return new Promise((resolve, reject) => {
     if (params && params.length) {
@@ -26,11 +26,9 @@ function all(sql, params) {
 }
 
 try {
-  // Use run() for statements that don't return rows
   await run("CREATE TABLE people (id INTEGER, name TEXT)");
   await run("INSERT INTO people VALUES (1,'Ish'), (2,'Ava'), (3,'Kai')");
 
-  // Use all() for SELECTs
   const rows = await all("SELECT * FROM people ORDER BY id");
   console.table(rows);
 } catch (e) {
