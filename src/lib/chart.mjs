@@ -14,33 +14,123 @@ export async function writeChartHTML(outPath, { title, type, labels, data }) {
     .wrap { padding: 16px; }
     h1 { font-size: 18px; margin: 0 0 12px; }
     .box { height: 70vh; }
+    .meta { color: #666; font-size: 12px; margin-top: 6px; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>${escapeHtml(title)}</h1>
     <div class="box"><canvas id="c"></canvas></div>
+    <div class="meta">${escapeHtml(type.toUpperCase())}</div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+    const TYPE = ${JSON.stringify(type)};
+    const TITLE = ${JSON.stringify(title)};
+    const LABELS = ${JSON.stringify(labels)};
+    const YDATA  = ${JSON.stringify(data)};
+
     const ctx = document.getElementById('c').getContext('2d');
-    new Chart(ctx, {
-      type: ${JSON.stringify(type)},
-      data: {
-        labels: ${JSON.stringify(labels)},
-        datasets: [{
-          label: ${JSON.stringify(title)},
-          data: ${JSON.stringify(data)}
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: { beginAtZero: true }
+
+    function isFiniteNumber(n) {
+      return typeof n === 'number' && Number.isFinite(n);
+    }
+
+    function toNumberLoose(v) {
+      if (typeof v === 'number') return v;
+      if (typeof v === 'string') {
+        const s = v.trim();
+        if (!s) return NaN;
+        // heuristic: if last comma is after last dot -> comma is decimal sep
+        const lastComma = s.lastIndexOf(',');
+        const lastDot = s.lastIndexOf('.');
+        let t = s;
+        if (lastComma > lastDot) {
+          t = s.replace(/\\./g, '').replace(',', '.');
+        } else if (lastComma !== -1 && lastDot === -1) {
+          t = s.replace(',', '.');
+        } else {
+          t = s.replace(/(?<=\\d)[,_\\s](?=\\d{3}\\b)/g, '');
         }
+        const n = Number(t);
+        return Number.isFinite(n) ? n : NaN;
       }
-    });
+      return NaN;
+    }
+
+    let config;
+
+    if (TYPE === 'scatter') {
+      // Build {x,y} points. If LABELS are numeric -> use as X.
+      // Otherwise use index for X and map ticks/tooltips back to LABELS.
+      const labelNums = LABELS.map(toNumberLoose);
+      const labelsAreNumeric = labelNums.every(isFiniteNumber);
+
+      const points = YDATA.map((y, i) => ({
+        x: labelsAreNumeric ? labelNums[i] : i,
+        y: (typeof y === 'number') ? y : Number(y)
+      }));
+
+      config = {
+        type: 'scatter',
+        data: {
+          // Chart.js ignores root labels for scatter; we only use them for tick mapping.
+          datasets: [{
+            label: TITLE,
+            data: points,
+            showLine: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          parsing: true, // {x,y} keys
+          scales: {
+            x: {
+              type: 'linear',
+              ticks: labelsAreNumeric ? {} : {
+                callback: (val) => {
+                  const idx = Math.round(val);
+                  return LABELS[idx] ?? idx;
+                }
+              }
+            },
+            y: { beginAtZero: true }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: labelsAreNumeric ? {} : {
+                title(items) {
+                  if (!items.length) return '';
+                  const v = items[0].parsed.x;
+                  const idx = Math.round(v);
+                  return LABELS[idx] ?? String(v);
+                }
+              }
+            }
+          }
+        }
+      };
+    } else {
+      // bar / line (standard labels + y series)
+      config = {
+        type: TYPE,
+        data: {
+          labels: LABELS,
+          datasets: [{
+            label: TITLE,
+            data: YDATA
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: { y: { beginAtZero: true } }
+        }
+      };
+    }
+
+    new Chart(ctx, config);
   </script>
 </body>
 </html>`;
