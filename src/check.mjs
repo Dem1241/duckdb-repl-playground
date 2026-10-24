@@ -1,29 +1,7 @@
 // src/check.mjs
-import duckdb from "duckdb";
+import { openDb } from "./lib/db.mjs";
 
-const db = new duckdb.Database(":memory:");
-const conn = db.connect();
-
-
-function run(sql, params) {
-  return new Promise((resolve, reject) => {
-    if (params && params.length) {
-      conn.run(sql, params, err => (err ? reject(err) : resolve()));
-    } else {
-      conn.run(sql, err => (err ? reject(err) : resolve()));
-    }
-  });
-}
-
-function all(sql, params) {
-  return new Promise((resolve, reject) => {
-    if (params && params.length) {
-      conn.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows)));
-    } else {
-      conn.all(sql, (err, rows) => (err ? reject(err) : resolve(rows)));
-    }
-  });
-}
+const { run, all, close } = await openDb(":memory:");
 
 try {
   await run("CREATE TABLE people (id INTEGER, name TEXT)");
@@ -35,6 +13,5 @@ try {
   console.error("DuckDB error:", e);
   process.exitCode = 1;
 } finally {
-  try { conn.close?.(); } catch {}
-  try { db.close?.(); } catch {}
+  await close();
 }

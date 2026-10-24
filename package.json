@@ -9,7 +9,7 @@
     "check": "node src/check.mjs"
   },
   "dependencies": {
-    "duckdb": "^1.1.0",
+    "@duckdb/node-api": "1.4.5-r.1",
     "minimist": "^1.2.8"
   }
 }

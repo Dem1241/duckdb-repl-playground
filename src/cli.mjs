@@ -49,7 +49,7 @@ const openPatterns = [
   ...args._
 ];
 
-const { run, all, close } = openDb(dbFile);
+const { run, all, close } = await openDb(dbFile);
 
 // state for export/chart
 let lastSql = null;
@@ -308,10 +308,19 @@ async function startRepl() {
 
   return await new Promise((resolve) => {
     let buffer = "";
+    // lines are handled one at a time, so piped input runs in order and is
+    // finished before the repl exits
+    let queue = Promise.resolve();
+    let closed = false;
+    let exited = false;
+    const prompt = () => {
+      if (!closed) rl.prompt();
+    };
 
     rl.prompt();
 
-    rl.on("line", async (line) => {
+    const handleLine = async (line) => {
+      if (exited) return;
       const trimmed = line.trim();
 
       // meta commands (only when not mid-statement)
@@ -372,6 +381,7 @@ async function startRepl() {
               }
             }
           } else if (cmd === ".exit") {
+            exited = true;
             rl.close();
             return;
           } else {
@@ -380,7 +390,7 @@ async function startRepl() {
         } catch (e) {
           console.error("Error:", e.message ?? e);
         }
-        rl.prompt();
+        prompt();
         return;
       }
 
@@ -394,18 +404,25 @@ async function startRepl() {
         } catch (e) {
           console.error("Query error:", e.message ?? e);
         }
-        rl.prompt();
+        prompt();
       } else {
         rl.setPrompt("   ...> ");
-        rl.prompt();
+        prompt();
         rl.setPrompt("duckdb> ");
       }
+    };
+
+    rl.on("line", (line) => {
+      queue = queue.then(() => handleLine(line));
     });
 
-    rl.on("close", async () => {
-      try { await saveHistory(histFile, rl.history); } catch {}
-      console.log("bye!");
-      resolve();
+    rl.on("close", () => {
+      closed = true;
+      queue = queue.then(async () => {
+        try { await saveHistory(histFile, rl.history); } catch {}
+        console.log("bye!");
+        resolve();
+      });
     });
   });
 }
