@@ -1,0 +1,23 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: node src/cli.mjs --open ./data/movies.csv -f queries/genre_avg.sql -o out/ci.csv
+      - run: printf 'SELECT COUNT(*) AS n FROM movies;\n' | node src/cli.mjs --repl --open ./data/movies.csv
